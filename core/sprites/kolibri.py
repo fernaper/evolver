@@ -1,4 +1,5 @@
 import arcade
+import math
 
 from enum import Enum, auto
 from pathlib import Path
@@ -21,9 +22,10 @@ class KolibriSprite(arcade.Sprite):
 
     def __init__(self):
         super().__init__()
-        self.scale = 0.5
-        self.center_x = 32 * self.scale
-        self.center_y = 32 * self.scale
+        self.scale: float = 4
+        self.speed: float = 0
+        self.center_x: int = 32 * self.scale
+        self.center_y: int = 32 * self.scale
 
         self.action_to_textures = {
             KolibriActions.idle: load_textures_from_path('kolibri/idle/'),
@@ -40,10 +42,26 @@ class KolibriSprite(arcade.Sprite):
     def action(self):
         return self.__action
 
-    @property
+    @action.setter
     def action(self, action: KolibriActions) -> None:
+        if action == self.__active_action:
+            return
         self.__active_action = action
         self.__texture_counter = 0
+
+    def update(self):
+        # Convert angle in degrees to radians.
+        angle_rad = math.radians(self.angle)
+        # Rotate
+        self.angle += self.change_angle
+        # Use math to find our change based on our speed and angle
+        self.center_x += -self.speed * math.sin(angle_rad)
+        self.center_y += self.speed * math.cos(angle_rad)
+
+        if self.speed != 0:
+            self.action = KolibriActions.walking
+        else:
+            self.action = KolibriActions.idle
 
     def update_animation(self, delta_time: float = 1 / 60):
         textures = self.action_to_textures[self.__active_action]
