@@ -9,7 +9,7 @@ SCREEN_HEIGHT = 900
 SCREEN_TITLE = 'Evolver'
 
 
-class MyGame(arcade.Window):
+class Evolver(arcade.Window):
 
     def __init__(self, width: int, height: int, title: str):
         super().__init__(width, height, title)
@@ -19,7 +19,7 @@ class MyGame(arcade.Window):
     def setup(self):
         """ Set up the game variables. Call to re-start the game. """
         self.kolibri_list = arcade.SpriteList()
-        self.kolibri_list.append(KolibriSprite())
+        KolibriSprite(self.kolibri_list)
 
     def on_draw(self):
         """
@@ -36,7 +36,6 @@ class MyGame(arcade.Window):
         need it.
         """
         self.kolibri_list.update()
-        self.kolibri_list.update_animation(delta_time)
 
     def on_key_press(self, key, key_modifiers):
         """
@@ -47,16 +46,16 @@ class MyGame(arcade.Window):
         """
         if key == arcade.key.UP or key == arcade.key.W:
             for k in self.kolibri_list:
-                k.speed = 8
+                k.speed = k.max_speed
         elif key == arcade.key.DOWN or key == arcade.key.S:
             for k in self.kolibri_list:
-                k.speed = -8
+                k.speed = - k.max_speed
         elif key == arcade.key.LEFT or key == arcade.key.A:
             for k in self.kolibri_list:
-                k.change_angle = 2
+                k.change_angle = k.max_angle_speed
         elif key == arcade.key.RIGHT or key == arcade.key.D:
             for k in self.kolibri_list:
-                k.change_angle = -2
+                k.change_angle = - k.max_angle_speed
         elif key == arcade.key.SPACE:
             self.kolibri_list.append(KolibriSprite())
 
@@ -98,8 +97,9 @@ class MyGame(arcade.Window):
 
 def main():
     """ Main function """
-    game = MyGame(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    game = Evolver(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
     game.setup()
+    game.set_update_rate(1 / 60)
     arcade.run()
 
 
